@@ -1,8 +1,10 @@
 package ImageHoster.controller;
 
+import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
+import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,10 @@ public class ImageController {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private CommentService commentService;
+
 
 
     //This method displays all the images in the user home page after successful login
@@ -59,9 +65,22 @@ public class ImageController {
     //
     @RequestMapping("/image/{id}/{title}/comments")
 
-    public void showImage(@PathVariable("id") int id, @PathVariable("title") String title, Model model) {
+    public String commentOnImage(@PathVariable("id") int id, @PathVariable("title") String title, Model model, Comment newComment,HttpSession session) {
+
+        User user = (User) session.getAttribute("loggeduser");
+        newComment.setUser(user);
+
+        Image image = imageService.getImage(id);
 
 
+        newComment.setText(title);
+        newComment.setCreatedDate(new Date());
+        commentService.createComment(newComment);
+        model.addAttribute("comments", newComment);
+        model.addAttribute("image", image);
+
+
+        return "images/image";
 
     }
     //
@@ -180,8 +199,13 @@ public class ImageController {
         Image image = imageService.getImage(imageId);
 
         if(!(image.getUser().getUsername().equalsIgnoreCase(user.getUsername()))) {
+
+            //Added the required attributes for the image to be displayed
+            model.addAttribute("image", image);
             model.addAttribute("deleteError", error);
-            return error;
+            model.addAttribute("comments",image.getComment());
+
+            return "images/image";
         }
 
         imageService.deleteImage(imageId);
