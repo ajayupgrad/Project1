@@ -51,8 +51,20 @@ public class ImageController {
         Image image = imageService.getImage(id);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
+        model.addAttribute("comments",image.getComment());
         return "images/image";
     }
+
+
+    //
+    @RequestMapping("/image/{id}/{title}/comments")
+
+    public void showImage(@PathVariable("id") int id, @PathVariable("title") String title, Model model) {
+
+
+
+    }
+    //
 
     //This controller method is called when the request pattern is of type 'images/upload'
     //The method returns 'images/upload.html' file
@@ -106,6 +118,7 @@ public class ImageController {
             //Added the required attributes for the image to be displayed
             model.addAttribute("image", image);
             model.addAttribute("editError", error);
+            model.addAttribute("comments",image.getComment());
 
             return "images/image";
         }
