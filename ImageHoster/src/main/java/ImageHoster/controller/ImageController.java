@@ -65,7 +65,7 @@ public class ImageController {
     //
     @RequestMapping("/image/{id}/{title}/comments")
 
-    public String commentOnImage(@PathVariable("id") int id, @PathVariable("title") String title, Model model, Comment newComment,HttpSession session) {
+    public String commentOnImage(@RequestParam("comment") String comments,@PathVariable("id") int id, @PathVariable("title") String title, Model model, Comment newComment,HttpSession session) {
 
         User user = (User) session.getAttribute("loggeduser");
         newComment.setUser(user);
@@ -73,7 +73,7 @@ public class ImageController {
         Image image = imageService.getImage(id);
 
 
-        newComment.setText(title);
+        newComment.setText(comments);
         newComment.setCreatedDate(new Date());
         commentService.createComment(newComment);
         model.addAttribute("comments", newComment);
